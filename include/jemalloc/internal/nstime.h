@@ -33,7 +33,11 @@ extern nstime_monotonic_t *JET_MUTABLE nstime_monotonic;
 typedef bool (nstime_update_t)(nstime_t *);
 extern nstime_update_t *JET_MUTABLE nstime_update;
 
+typedef void (nstime_prof_update_t)(nstime_t *);
+extern nstime_prof_update_t *JET_MUTABLE nstime_prof_update;
+
 bool nstime_init_update(nstime_t *time);
+void nstime_prof_init_update(nstime_t *time);
 
 JEMALLOC_ALWAYS_INLINE void
 nstime_init_zero(nstime_t *time) {

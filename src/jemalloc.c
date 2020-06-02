@@ -104,6 +104,14 @@ const char *zero_realloc_mode_names[] = {
 	"abort",
 };
 
+prof_time_resolution_t opt_prof_time_resolution =
+	prof_time_resolution_default;
+
+const char *prof_time_resolution_mode_names[] = {
+	"default",
+	"high",
+};
+
 /*
  * These are the documented values for junk fill debugging facilities -- see the
  * man page.
@@ -1497,6 +1505,21 @@ malloc_conf_init_helper(sc_data_t *sc_data, unsigned bin_shard_sizes[SC_NBINS],
 				CONF_HANDLE_BOOL(
 				    opt_prof_experimental_use_sys_thread_name,
 				    "prof_experimental_use_sys_thread_name")
+				if (CONF_MATCH("prof_time_resolution")) {
+					if (CONF_MATCH_VALUE("default")) {
+						opt_prof_time_resolution = prof_time_resolution_default;
+					} else if (CONF_MATCH_VALUE("high")) {
+						if (!config_high_resolution_timer) {
+							CONF_ERROR("No high resolution timer support",
+									k, klen, v, vlen);
+						} else {
+							opt_prof_time_resolution = prof_time_resolution_high;
+						}
+					} else {
+						CONF_ERROR("Invalid conf value", k, klen, v, vlen);
+					}
+				}
+				CONF_CONTINUE;
 			}
 			if (config_log) {
 				if (CONF_MATCH("log")) {

@@ -152,12 +152,34 @@ nstime_monotonic_impl(void) {
 }
 nstime_monotonic_t *JET_MUTABLE nstime_monotonic = nstime_monotonic_impl;
 
+static void
+nstime_get_realtime(nstime_t *time) {
+	struct timespec ts;
+
+	clock_gettime(CLOCK_REALTIME, &ts);
+	nstime_init2(time, ts.tv_sec, ts.tv_nsec);
+}
+
+static void
+nstime_prof_update_impl(nstime_t *time) {
+	nstime_t old_time;
+
+	nstime_copy(&old_time, time);
+
+	if (opt_prof_time_resolution == prof_time_resolution_high) {
+		nstime_get_realtime(time);
+	} else {
+	nstime_get(time);
+	}
+}
+nstime_prof_update_t *JET_MUTABLE nstime_prof_update = nstime_prof_update_impl;
+
 static bool
 nstime_update_impl(nstime_t *time) {
 	nstime_t old_time;
 
 	nstime_copy(&old_time, time);
-	nstime_get(time);
+  nstime_get(time);
 
 	/* Handle non-monotonic clocks. */
 	if (unlikely(nstime_compare(&old_time, time) > 0)) {
@@ -173,4 +195,10 @@ bool
 nstime_init_update(nstime_t *time) {
 	nstime_init_zero(time);
 	return nstime_update(time);
+}
+
+void
+nstime_prof_init_update(nstime_t *time) {
+	nstime_init_zero(time);
+	nstime_prof_update(time);
 }

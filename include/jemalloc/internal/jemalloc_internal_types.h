@@ -20,6 +20,12 @@ typedef enum zero_realloc_action_e zero_realloc_action_t;
 /* Signature of write callback. */
 typedef void (write_cb_t)(void *, const char *);
 
+enum prof_time_resolution_e {
+	prof_time_resolution_default = 0,
+	prof_time_resolution_high = 1
+};
+typedef enum prof_time_resolution_e prof_time_resolution_t;
+
 /*
  * Flags bits:
  *
